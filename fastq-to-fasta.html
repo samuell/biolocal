@@ -1,38 +1,47 @@
-<script src="https://biowasm.com/cdn/v3/aioli.js"></script>
-<script type="module">
-    const CLI = await new Aioli(["seqtk/1.4"]);
+<html>
+<head>
+    <title>FastQ to Fasta converter</title>
+    <script src="https://biowasm.com/cdn/v3/aioli.js"></script>
+    <script type="module">
+        const CLI = await new Aioli(["seqtk/1.4"]);
 
-    // Function to launch samtools
-    async function run() {
-        // CLI.mount returns the absolute path of each file mounted
-        const files = document.getElementById("fqfile").files;
-        const paths = await CLI.mount(files);
+        // Function to launch samtools
+        async function run() {
+            // CLI.mount returns the absolute path of each file mounted
+            const files = document.getElementById("fqfile").files;
+            const paths = await CLI.mount(files);
 
-        var fqPath = paths[0]
-        var fqFile = fqPath.split("/").pop()
+            var fqPath = paths[0]
+            var fqFile = fqPath.split("/").pop()
 
-        // Retrieve SAM header on the first file provided
-        document.getElementById("message").innerHTML = "Working ...";
+            // Retrieve SAM header on the first file provided
+            document.getElementById("message").innerHTML = "Working ...";
 
-        const fastaOutput = await CLI.exec(`seqtk seq -A ${fqPath}`);
-        var invisibleElement = document.createElement('a');
-        invisibleElement.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(fastaOutput));
-        invisibleElement.setAttribute('download', `${fqFile}.fasta`);
-        invisibleElement.style.display = 'none';
-        document.body.appendChild(invisibleElement);
-        invisibleElement.click();
-        document.body.removeChild(invisibleElement);
+            const fastaOutput = await CLI.exec(`seqtk seq -A ${fqPath}`);
+            var invisibleElement = document.createElement('a');
+            invisibleElement.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(fastaOutput));
+            invisibleElement.setAttribute('download', `${fqFile}.fasta`);
+            invisibleElement.style.display = 'none';
+            document.body.appendChild(invisibleElement);
+            invisibleElement.click();
+            document.body.removeChild(invisibleElement);
 
-        document.getElementById("message").innerHTML = "Done!";
-    }
+            document.getElementById("message").innerHTML = "Done!";
+        }
 
 
-    // Run seqtk when the user clicks the "Run" button
-    document.getElementById("btn").addEventListener("click", run);
-</script>
+        // Run seqtk when the user clicks the "Run" button
+        document.getElementById("btn").addEventListener("click", run);
+    </script>
+</head>
+    <body style="background: #cccccc; font-family: arial, helvetica, sans-serif">
+        <p>Please select a FastQ file from your computer, to convert to Fasta: </p>
+        <p><input id="fqfile" type="file"></p>
+        <p><button id="btn">Convert FastQ to Fasta</button></p>
 
-<p>Please select a FastQ file from your computer, to convert to Fasta: </p>
-<p><input id="fqfile" type="file"></p>
-<p><button id="btn">Convert FastQ to Fasta</button></p>
+        <p id="message"></p>
 
-<p id="message"></p>
+        <hr style="border: none; height:1px; background: #999;">
+        <p><small><small>Powered by <a href="https://biowasm.com/" target="_blank">BioWasm</a> | This script is part of the <a href="https://github.com/samuell/biolocal#readme" target="_blank">BioLocal project</a></small></small></p>
+    </body>
+</html>
